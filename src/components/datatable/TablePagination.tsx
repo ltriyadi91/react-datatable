@@ -1,4 +1,4 @@
-import { Badge, Flex, Pagination } from "@mantine/core";
+import { Badge, Flex, Pagination, Select, Group } from "@mantine/core";
 
 interface TablePaginationProps {
   page: number;
@@ -6,6 +6,8 @@ interface TablePaginationProps {
   totalPages: number;
   paginatedDataLength: number;
   totalDataLength: number;
+  recordsPerPage?: number;
+  onRecordsPerPageChange?: (value: number) => void;
 }
 
 export function TablePagination({
@@ -14,12 +16,32 @@ export function TablePagination({
   totalPages,
   paginatedDataLength,
   totalDataLength,
+  recordsPerPage = 10,
+  onRecordsPerPageChange,
 }: TablePaginationProps) {
   return (
     <Flex justify="space-between" align="center" wrap="wrap" gap="md">
-      <Badge size="lg" radius="md" variant="outline" color="blue">
-        Showing {paginatedDataLength} of {totalDataLength} records
-      </Badge>
+      <Group>
+        <Badge size="lg" radius="md" variant="outline" color="blue">
+          Showing {paginatedDataLength} of {totalDataLength} records
+        </Badge>
+        
+        {onRecordsPerPageChange && (
+          <Select
+            value={recordsPerPage.toString()}
+            onChange={(value) => onRecordsPerPageChange(Number(value))}
+            data={[
+              { value: '10', label: '10 per page' },
+              { value: '25', label: '25 per page' },
+              { value: '50', label: '50 per page' },
+              { value: '100', label: '100 per page' },
+            ]}
+            size="sm"
+            w={130}
+            radius="md"
+          />
+        )}
+      </Group>
 
       <Pagination
         value={page}

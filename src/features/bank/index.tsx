@@ -1,6 +1,6 @@
-import { Container, Flex, Paper, Text, Title } from "@mantine/core";
+import { Container, Flex, Paper, Text, Title, Stack } from "@mantine/core";
 import { DataTable } from "@/components/datatable/TableMain";
-import { useTable } from "@/context/bank-context";
+import { usePageSizeControl, useTable } from "@/context/bank-context";
 import { SelectionRows } from "@/components/common/SelectionRows";
 import { CategoryBadge } from "@/features/bank/components/CategoryBadge";
 
@@ -9,7 +9,9 @@ import type { BankTransaction } from "@/types/data";
 import { formatCurrency } from "@/utils/dataUtils";
 
 export default function Bank() {
+  // Get all table context values
   const tableContext = useTable();
+  const { setPageSize } = usePageSizeControl();
 
   // Sample column definitions for bank transactions
   const bankColumns: ColumnDef<BankTransaction>[] = [
@@ -82,14 +84,19 @@ export default function Bank() {
         mb="xl"
         style={{ borderColor: "var(--mantine-color-blue-light)" }}
       >
-        <DataTable
-          {...tableContext}
-          withTableBorder={false}
-          columns={bankColumns}
-          data={tableContext.data as BankTransaction[]}
-          paginatedData={tableContext.paginatedData as BankTransaction[]}
-          filteredData={tableContext.filteredData as BankTransaction[]}
-        />
+        <Stack gap="md">
+          {/* DataTable without pagination component */}
+          <DataTable
+            {...tableContext}
+            withTableBorder={false}
+            columns={bankColumns}
+            data={tableContext.data as BankTransaction[]}
+            paginatedData={tableContext.paginatedData as BankTransaction[]}
+            filteredData={tableContext.filteredData as BankTransaction[]}
+            onRecordsPerPageChange={setPageSize}
+          />
+          
+        </Stack>
       </Paper>
 
       <SelectionRows

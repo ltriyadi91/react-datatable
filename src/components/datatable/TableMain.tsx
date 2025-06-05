@@ -27,6 +27,7 @@ export interface DataTableProps<T extends DataRecord> {
   recordsPerPage?: number;
   showColumnFilters?: boolean;
   verticalSpacing?: "xs" | "sm" | "md" | "lg" | "xl";
+  hidePagination?: boolean; // New prop to hide the pagination component
 
   // Pagination props
   page?: number;
@@ -62,6 +63,7 @@ export interface DataTableProps<T extends DataRecord> {
 
   // Refresh data
   onRefresh?: () => void;
+  onRecordsPerPageChange?: (recordsPerPage: number) => void;
 }
 
 export function DataTable<T extends DataRecord>({
@@ -78,6 +80,7 @@ export function DataTable<T extends DataRecord>({
   highlightOnHover = true,
   showColumnFilters = true,
   verticalSpacing = "md",
+  recordsPerPage = 10,
 
   // Pagination props with defaults
   page = 1,
@@ -110,6 +113,10 @@ export function DataTable<T extends DataRecord>({
 
   // Refresh prop
   onRefresh = () => {},
+  
+  // UI Control props
+  hidePagination = false,
+  onRecordsPerPageChange = () => {},
 }: DataTableProps<T>) {
   // Show error state
   if (error) {
@@ -172,13 +179,18 @@ export function DataTable<T extends DataRecord>({
           />
         </Box>
 
-        <TablePagination
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
-          paginatedDataLength={paginatedData.length}
-          totalDataLength={filteredData.length}
-        />
+        {/* Only render pagination if not hidden */}
+        {!hidePagination && (
+          <TablePagination
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            paginatedDataLength={paginatedData.length}
+            totalDataLength={filteredData.length}
+            recordsPerPage={recordsPerPage}
+            onRecordsPerPageChange={onRecordsPerPageChange}
+          />
+        )}
       </Stack>
     </Card>
   );

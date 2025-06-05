@@ -1,54 +1,181 @@
-# React + TypeScript + Vite
+# React Data Table Reusable Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A flexible, data table component for React applications with advanced functionality including sorting, filtering, pagination, and selection capabilities.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React**
+- **TypeScript**
+- **Mantine UI**
+- **React Context API**
+- **Vite**
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔍 **Search & Filter**: Search across all data or apply column specific filters
+- 🔄 **Sorting**: Sort data by clicking column headers (with optional per column control)
+- 📋 **Pagination**: Navigate through large datasets with ease
+- ✅ **Row Selection**: Select individual or all rows with checkboxes
+- 🛠️ **Customizable**: Flexible column definitions with custom renderers
+- 🌐 **Data Fetching**: Supports both URL-based data loading and direct data props
+- 🔄 **Loading States**: Visual feedback during data operations
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+## Folder Structure
+
+```
+src/
+├── components/
+│   ├── common/              # Shared UI components
+│   │   └── SelectionRows.tsx
+│   ├── datatable/          # Data table components
+│   │   ├── TableMain.tsx   # Main table component
+│   │   ├── TableHead.tsx   # Table header component
+│   │   ├── TableBody.tsx   # Table body component
+│   │   ├── TablePagination.tsx # Pagination component
+│   │   ├── TableActions.tsx # Search and filter actions
+│   │   ├── TableSort.tsx   # Sortable header component
+│   │   ├── FilterWrapper.tsx # Filter container
+│   │   ├── FilterSelect.tsx  # Single-select filter
+│   │   └── FilterMultiSelect.tsx # Multi-select filter
+├── context/
+│   └── bank-context/       # Bank data context provider
+│       └── index.tsx
+├── features/
+│   └── bank/               # Bank transaction example
+│       ├── components/     # Bank-specific components
+│       └── index.tsx       # Bank transaction page
+├── types/
+│   ├── table.ts           # Data table type definitions
+│   └── data.ts            # Data model type definitions
+├── utils/
+│   └── dataUtils.ts       # Utility functions for data manipulation
+└── App.tsx                # Main application component
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or newer)
+- pnpm (v7 or newer)
+
+### Installation
+
+```bash
+# If you don't have pnpm installed yet:
+# npm install -g pnpm
+# or visit: https://pnpm.io/installation for other methods
+
+# Then install dependencies
+pnpm install
+```
+
+### Running Locally
+
+```bash
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+```
+
+## How to Use the DataTable
+
+### Basic Example
+
+```tsx
+import { DataTable } from "@/components/datatable/TableMain";
+import type { ColumnDef } from "@/types/table";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+const columns: ColumnDef<User>[] = [
+  {
+    accessor: "name",
+    header: "Name",
+    width: 200
+  },
+  {
+    accessor: "email",
+    header: "Email Address"
+  },
+  {
+    accessor: "role",
+    header: "User Role",
+    filter: {
+      type: "select"
+    }
+  }
+];
+
+function UserList() {
+  // For simple usage with direct data
+  return (
+    <DataTable
+      columns={columns}
+      records={users}
+      searchable={true}
+      height={500}
+    />
+  );
+}
+```
+
+### Advanced Example with Context
+
+```tsx
+import { DataTable } from "@/components/datatable/TableMain";
+import { useTable } from "@/context/table-context";
+
+function UserList() {
+  const tableContext = useTable();
+  
+  return (
+    <DataTable
+      {...tableContext}
+      columns={columns}
+      data={tableContext.data}
+      paginatedData={tableContext.paginatedData}
+      filteredData={tableContext.filteredData}
+      onRefresh={() => tableContext.fetchData()}
+      withTableBorder={true}
+      striped={true}
+      highlightOnHover={true}
+    />
+  );
+}
+```
+
+### Column Definition Options
+
+```tsx
+const columns: ColumnDef<MyData>[] = [
+  {
+    accessor: "id",          // Property to access in data object
+    header: "ID",          // Display name (optional)
+    width: 100,            // Width in pixels or CSS value (optional)
+    textAlign: "center",   // Text alignment (optional)
+    sortable: false,       // Disable sorting for this column (optional)
+    filter: {              // Column filter (optional)
+      type: "select",      // Filter type: "select", "multi-select", "date"
+      options: [{value: "admin", label: "Admin"}] // Predefined options (optional)
     },
-  },
-})
+    render: (record) => (  // Custom renderer (optional)
+      <Badge color="blue">{record.status}</Badge>
+    )
+  }
+];
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## License
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+MIT License © 2025

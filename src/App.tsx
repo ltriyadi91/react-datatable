@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  AppShell,
+  Container,
+  MantineProvider,
+  Text,
+} from "@mantine/core";
+
+import { BankProvider } from "@/context/bank-context";
+import { theme } from "@/theme";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+
+import BankApp from "./features/bank";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <MantineProvider theme={theme}>
+      <AppShell>
+        <AppShell.Main pt={80}>
+          <AppShell.Header p="sm" bg="blue.7">
+            <Container size="xl">
+              <Text fz="xl" fw={800} c="white">
+                Data Table Components Usage
+              </Text>
+            </Container>
+          </AppShell.Header>
+          <BankProvider dataUrl="/src/data/bank.json" recordsPerPage={10}>
+            <BankApp />
+          </BankProvider>
+        </AppShell.Main>
+      </AppShell>
+    </MantineProvider>
+  );
 }
 
-export default App
+export default App;
